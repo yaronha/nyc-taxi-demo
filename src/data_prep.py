@@ -74,7 +74,6 @@ def add_airport_dist(df):
     pickup_nyc = sphere_dist(pickup_lat, pickup_lon, nyc_coord[0], nyc_coord[1])
     dropoff_nyc = sphere_dist(nyc_coord[0], nyc_coord[1], dropoff_lat, dropoff_lon)
 
-    df = df.copy()
     df["jfk_dist"] = pickup_jfk + dropoff_jfk
     df["ewr_dist"] = pickup_ewr + dropoff_ewr
     df["lga_dist"] = pickup_lga + dropoff_lga
@@ -103,14 +102,12 @@ def radian_conv_step(df):
 
 
 def sphere_dist_bear_step(df):
-    df = df.copy()
     df["bearing"] = sphere_dist_bear(df["pickup_latitude"], df["pickup_longitude"],
                                      df["dropoff_latitude"], df["dropoff_longitude"],)
     return df
 
 
 def sphere_dist_step(df):
-    df = df.copy()
     df["distance"] = sphere_dist(df["pickup_latitude"], df["pickup_longitude"],
                                  df["dropoff_latitude"],df["dropoff_longitude"],)
     return df
