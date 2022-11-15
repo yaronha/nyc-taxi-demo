@@ -39,14 +39,8 @@ def data_preparation_pipline(dataset: pd.DataFrame):
 def clean_df(df):
     return df[
         (df.fare_amount > 0)
-        & (df.fare_amount <= 500)
-        & (
-            (df.pickup_longitude != 0)
-            & (df.pickup_latitude != 0)
-            & (df.dropoff_longitude != 0)
-            & (df.dropoff_latitude != 0)
-        )
-    ]
+        & (df.fare_amount <= 500) & ((df.pickup_longitude != 0) & (df.pickup_latitude != 0)
+                                      & (df.dropoff_longitude != 0) & (df.dropoff_latitude != 0))]
 
 
 def add_airport_dist(df):
@@ -91,56 +85,34 @@ def add_airport_dist(df):
 
 
 def add_datetime_info(df):
-    df = df.copy()
     # Convert to datetime format
-    df["pickup_datetime"] = pd.to_datetime(
-        df["pickup_datetime"], format="%Y-%m-%d %H:%M:%S UTC"
-    )
-
+    df["pickup_datetime"] = pd.to_datetime(df["pickup_datetime"], format="%Y-%m-%d %H:%M:%S UTC")
     df["hour"] = df.pickup_datetime.dt.hour
     df["day"] = df.pickup_datetime.dt.day
     df["month"] = df.pickup_datetime.dt.month
     df["weekday"] = df.pickup_datetime.dt.weekday
     df["year"] = df.pickup_datetime.dt.year
-
     return df
 
 
 def radian_conv_step(df):
-    features = [
-        "pickup_latitude",
-        "pickup_longitude",
-        "dropoff_latitude",
-        "dropoff_longitude",
-    ]
-    df = df.copy()
+    features = ["pickup_latitude", "pickup_longitude", "dropoff_latitude", "dropoff_longitude",]
     for feature in features:
         df[feature] = np.radians(df[feature])
-
     return df
 
 
 def sphere_dist_bear_step(df):
     df = df.copy()
-    df["bearing"] = sphere_dist_bear(
-        df["pickup_latitude"],
-        df["pickup_longitude"],
-        df["dropoff_latitude"],
-        df["dropoff_longitude"],
-    )
-
+    df["bearing"] = sphere_dist_bear(df["pickup_latitude"], df["pickup_longitude"],
+                                     df["dropoff_latitude"], df["dropoff_longitude"],)
     return df
 
 
 def sphere_dist_step(df):
     df = df.copy()
-    df["distance"] = sphere_dist(
-        df["pickup_latitude"],
-        df["pickup_longitude"],
-        df["dropoff_latitude"],
-        df["dropoff_longitude"],
-    )
-
+    df["distance"] = sphere_dist(df["pickup_latitude"], df["pickup_longitude"],
+                                 df["dropoff_latitude"],df["dropoff_longitude"],)
     return df
 
 
@@ -158,12 +130,8 @@ def sphere_dist(pickup_lat, pickup_lon, dropoff_lat, dropoff_lon):
     # Compute distances along lat, lon dimensions
     dlat = dropoff_lat - pickup_lat
     dlon = dropoff_lon - pickup_lon
-
     # Compute haversine distance
-    a = (
-        np.sin(dlat / 2.0) ** 2
-        + np.cos(pickup_lat) * np.cos(dropoff_lat) * np.sin(dlon / 2.0) ** 2
-    )
+    a = (np.sin(dlat / 2.0) ** 2+ np.cos(pickup_lat) * np.cos(dropoff_lat) * np.sin(dlon / 2.0) ** 2)
     return 2 * R_earth * np.arcsin(np.sqrt(a))
 
 
@@ -177,7 +145,6 @@ def sphere_dist_bear(pickup_lat, pickup_lon, dropoff_lat, dropoff_lon):
     )
     # Compute distances along lat, lon dimensions
     dlon = pickup_lon - dropoff_lon
-
     # Compute bearing distance
     a = np.arctan2(
         np.sin(dlon * np.cos(dropoff_lat)),
