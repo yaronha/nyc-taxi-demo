@@ -1,8 +1,8 @@
-from typing import Dict, Union
+from typing import Dict, Union, List, Any
 import numpy as np
 
 
-def preprocess(vector: Union[Dict]) -> Dict:
+def preprocess(vector: Union[Dict]) -> Dict[str, List[List[Any]]]:
     """Converting a simple text into a structured body for the serving function
 
     :param vector: The input to predict
@@ -18,9 +18,16 @@ def postprocess(model_response: Dict) -> str:
     """
     return f'predicted fare amount is {model_response["outputs"][0]}'
 
+
 def sphere_dist_step(df):
     df["distance"] = sphere_dist(df["pickup_latitude"], df["pickup_longitude"],
-                                 df["dropoff_latitude"],df["dropoff_longitude"],)
+                                 df["dropoff_latitude"], df["dropoff_longitude"], )
+    return df
+
+
+def sphere_dist_bear_step(df):
+    df["bearing"] = sphere_dist_bear(df["pickup_latitude"], df["pickup_longitude"],
+                                     df["dropoff_latitude"], df["dropoff_longitude"], )
     return df
 
 
@@ -41,3 +48,22 @@ def sphere_dist(pickup_lat, pickup_lon, dropoff_lat, dropoff_lon):
     # Compute haversine distance
     a = (np.sin(dlat / 2.0) ** 2 + np.cos(pickup_lat) * np.cos(dropoff_lat) * np.sin(dlon / 2.0) ** 2)
     return 2 * R_earth * np.arcsin(np.sqrt(a))
+
+
+def sphere_dist_bear(pickup_lat, pickup_lon, dropoff_lat, dropoff_lon):
+    """
+    Return distance along great radius between pickup and dropoff coordinates.
+    """
+    # Convert degrees to radians
+    pickup_lat, pickup_lon, dropoff_lat, dropoff_lon = map(
+        np.radians, [pickup_lat, pickup_lon, dropoff_lat, dropoff_lon]
+    )
+    # Compute distances along lat, lon dimensions
+    dlon = pickup_lon - dropoff_lon
+    # Compute bearing distance
+    a = np.arctan2(
+        np.sin(dlon * np.cos(dropoff_lat)),
+        np.cos(pickup_lat) * np.sin(dropoff_lat)
+        - np.sin(pickup_lat) * np.cos(dropoff_lat) * np.cos(dlon),
+    )
+    return a
