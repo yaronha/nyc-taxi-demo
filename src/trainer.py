@@ -12,13 +12,8 @@ def train(
     label_column: str = "fare_amount",
     model_name: str = "lgbm_ny_taxi",
     boosting_type: str = "gbdt",
-    num_leaves: int = 31,
-    learning_rate: float = 0.05,
-    max_depth: int = -1,
     subsample: float = 0.8,
-    colsample_bytree: float = 0.6,
     min_split_gain: float = 0.5,
-    min_child_weight: int = 1,
     min_child_samples: int = 10,
 ):
     y = train_set[label_column]
@@ -30,13 +25,8 @@ def train(
 
     model = lgbm.LGBMRegressor(
         boosting_type=boosting_type,
-        num_leaves=num_leaves,
-        learning_rate=learning_rate,
-        max_depth=max_depth,
         subsample=subsample,
-        colsample_bytree=colsample_bytree,
         min_split_gain=min_split_gain,
-        min_child_weight=min_child_weight,
         min_child_samples=min_child_samples,
     )
 
