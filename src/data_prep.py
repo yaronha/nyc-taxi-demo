@@ -4,19 +4,19 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 
-@mlrun.handler(
-    outputs=["train_dataset:dataset", "test_dataset:dataset", "label_column"]
-)
-def data_preparation_pipline(dataset: pd.DataFrame):
-    """
-    A function which preparation the NY taxi dataset
-    """
+@mlrun.handler(outputs=["train_dataset:dataset",
+                        "test_dataset:dataset", "label_column"])
+def data_preparation(dataset: pd.DataFrame, test_size=0.2):
+    """A function which preparation the NY taxi dataset
 
-    print("----- RAW DATA -----")
-    print("Data Set : ")
-    print(dataset.head())
+    :param dataset: input dataset dataframe
+    :param test_size: the amount (%) of data to use for test
+
+    :return train_dataset, test_dataset, label_column
+    """
 
     # preform all the steps on the dataset
+    dataset = clean_df(dataset)
     dataset = radian_conv_step(
         sphere_dist_bear_step(
             sphere_dist_step(
@@ -27,11 +27,7 @@ def data_preparation_pipline(dataset: pd.DataFrame):
         )
     ).drop(columns=["key", "pickup_datetime"])
 
-    print("----- DATA AFTER PREPARATION -----")
-    print("Data Set : ")
-    print(dataset.head())
-
-    train, test = train_test_split(dataset, test_size=0.2)
+    train, test = train_test_split(dataset, test_size=test_size)
     return train, test, "fare_amount"
 
 

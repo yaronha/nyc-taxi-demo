@@ -5,7 +5,7 @@ from src.data_prep import *
 
 def test_data_preparation_pipline():
     df = get_data()
-    train, test, label = data_preparation_pipline(df)
+    train, test, label = data_preparation(df, 0.2)
 
     assert label == 'fare_amount'
 
