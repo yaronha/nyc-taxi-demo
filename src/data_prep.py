@@ -18,10 +18,10 @@ def data_preparation(dataset: pd.DataFrame, test_size=0.2):
     # preform all the steps on the dataset
     dataset = clean_df(dataset)
     dataset = add_datetime_info(
-        radian_conv_step(
+        sphere_dist_step(
             sphere_dist_bear_step(
-                sphere_dist_step(add_airport_dist(dataset.dropna(how="any", axis="rows"))
-                )
+                radian_conv_step(add_airport_dist(dataset.dropna(how="any", axis="rows"))
+                                 )
             )
         )
     ).drop(columns=["key", "pickup_datetime"])
