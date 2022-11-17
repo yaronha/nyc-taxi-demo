@@ -1,5 +1,6 @@
 import mlrun
 from kfp import dsl
+from mlrun.feature_store.steps import DateExtractor
 
 
 @dsl.pipeline(name="lgbm_ny_taxi_pipeline_batch_predict")
@@ -22,7 +23,7 @@ def kfpipeline(
 
     # batch
     batcing_run = project.run_function(
-        function='batch_predict',
+        function='hub://batch_inference',
         inputs={
             "dataset": prepare_dataset_run.outputs["test_dataset"],
         },
