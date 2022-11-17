@@ -25,17 +25,23 @@ def data_preparation(dataset: pd.DataFrame, test_size=0.2):
             )
         )
     ).drop(columns=["key", "pickup_datetime"])
-
-    train, test = train_test_split(dataset, test_size=test_size)
+    if test_size != 0:
+        train, test = train_test_split(dataset, test_size=test_size)
+    else:
+        train, test = dataset, dataset
     return train, test, "fare_amount"
 
 
 # ---- STEPS -------
 def clean_df(df):
-    return df[
-        (df.fare_amount > 0)
-        & (df.fare_amount <= 500) & ((df.pickup_longitude != 0) & (df.pickup_latitude != 0)
-                                     & (df.dropoff_longitude != 0) & (df.dropoff_latitude != 0))]
+    if 'fare_amount' in df.columns:
+        return df[
+            (df.fare_amount > 0)
+            & (df.fare_amount <= 500) & ((df.pickup_longitude != 0) & (df.pickup_latitude != 0)
+                                         & (df.dropoff_longitude != 0) & (df.dropoff_latitude != 0))]
+    else:
+        return df[((df.pickup_longitude != 0) & (df.pickup_latitude != 0)
+                   & (df.dropoff_longitude != 0) & (df.dropoff_latitude != 0))]
 
 
 def add_airport_dist(df):
