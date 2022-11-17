@@ -87,11 +87,11 @@ def add_airport_dist(df):
 def add_datetime_info(df):
     # Convert to datetime format
     df["pickup_datetime"] = pd.to_datetime(df["pickup_datetime"], format="%Y-%m-%d %H:%M:%S UTC")
-    df["hour"] = df.pickup_datetime.dt.hour
-    df["day"] = df.pickup_datetime.dt.day
-    df["month"] = df.pickup_datetime.dt.month
-    df["weekday"] = df.pickup_datetime.dt.weekday
-    df["year"] = df.pickup_datetime.dt.year
+    df["timestamp_hour"] = df.pickup_datetime.dt.hour
+    df["timestamp_day"] = df.pickup_datetime.dt.day
+    df["timestamp_month"] = df.pickup_datetime.dt.month
+    df["timestamp_weekday"] = df.pickup_datetime.dt.weekday
+    df["timestamp_year"] = df.pickup_datetime.dt.year
     return df
 
 

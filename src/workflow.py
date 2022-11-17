@@ -19,7 +19,7 @@ def kfpipeline(
         outputs=["train_dataset", "test_dataset", 'label'],
     )
 
-    # Training + param!
+    # Training
     training_run = mlrun.run_function(
         function="trainer",
         handler="train",
@@ -31,18 +31,23 @@ def kfpipeline(
                       "min_child_samples": [5, 10, 15]}, 
         selector="min.mean_squared_error", 
         outputs=["model"],
-    ).after(prepare_dataset_run)
+    )
     
     # Evaluating
     evaluating_run = mlrun.run_function(
-        function="evaluate", 
+        function="hub://auto_trainer",
+        name="evaluate", 
         handler="evaluate", 
         inputs={"dataset": prepare_dataset_run.outputs["test_dataset"]},
         params={"model": training_run.outputs["model"], "label_columns": 'fare_amount', }
-    ).after(training_run)
+    )
 
     # Get the function:
     serving_function = project.get_function("serving")
+    
+    # Enable model monitoring
+    serving_function.set_tracking()
+
     graph = serving_function.set_topology("flow", engine="async")
 
     # Build the serving graph:
