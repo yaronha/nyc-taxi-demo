@@ -53,25 +53,26 @@ def kfpipeline(
     # Enable model monitoring
     serving_function.set_tracking()
 
-    graph = serving_function.set_topology("flow", engine="async")
+    if serving_function.spec.graph is None:
+        graph = serving_function.set_topology("flow", engine="async")
 
-    # Build the serving graph:
-    graph.to(handler="sphere_dist_bear_step", name="bearing_calculation").to(
-        handler="sphere_dist_step", name="distance_calculation"
-    ).to(
-        DateExtractor(
-            parts=["hour", "day", "month", "day_of_week", "year"],
-            timestamp_col="timestamp",
-        )
-    ).to(
-        handler="preprocess", name="peprocess"
-    ).to(
-        class_name="mlrun.frameworks.lgbm.LGBMModelServer",
-        name="predict-fareAmount",
-        model_path=str(training_run.outputs["model"]),
-    ).to(
-        handler="postprocess", name="postprocess"
-    ).respond()
+        # Build the serving graph:
+        graph.to(handler="sphere_dist_bear_step", name="bearing_calculation").to(
+            handler="sphere_dist_step", name="distance_calculation"
+        ).to(
+            DateExtractor(
+                parts=["hour", "day", "month", "day_of_week", "year"],
+                timestamp_col="timestamp",
+            )
+        ).to(
+            handler="preprocess", name="peprocess"
+        ).to(
+            class_name="mlrun.frameworks.lgbm.LGBMModelServer",
+            name="lgbm_ny_taxi",
+            model_path=str(training_run.outputs["model"]),
+        ).to(
+            handler="postprocess", name="postprocess"
+        ).respond()
 
     # Deploy the serving function:
     project.deploy_function("serving").after(training_run)
