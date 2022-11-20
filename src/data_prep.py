@@ -4,8 +4,9 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 
-@mlrun.handler(outputs=["train_dataset:dataset",
-                        "test_dataset:dataset", "label_column"])
+@mlrun.handler(
+    outputs=["train_dataset:dataset", "test_dataset:dataset", "label_column"]
+)
 def data_preparation(dataset: pd.DataFrame, test_size=0.2):
     """A function which preparation the NY taxi dataset
 
@@ -20,8 +21,9 @@ def data_preparation(dataset: pd.DataFrame, test_size=0.2):
     dataset = add_datetime_info(
         sphere_dist_step(
             sphere_dist_bear_step(
-                radian_conv_step(add_airport_dist(dataset.dropna(how="any", axis="rows"))
-                                 )
+                radian_conv_step(
+                    add_airport_dist(dataset.dropna(how="any", axis="rows"))
+                )
             )
         )
     ).drop(columns=["key", "pickup_datetime"])
@@ -34,14 +36,26 @@ def data_preparation(dataset: pd.DataFrame, test_size=0.2):
 
 # ---- STEPS -------
 def clean_df(df):
-    if 'fare_amount' in df.columns:
+    if "fare_amount" in df.columns:
         return df[
             (df.fare_amount > 0)
-            & (df.fare_amount <= 500) & ((df.pickup_longitude != 0) & (df.pickup_latitude != 0)
-                                         & (df.dropoff_longitude != 0) & (df.dropoff_latitude != 0))]
+            & (df.fare_amount <= 500)
+            & (
+                (df.pickup_longitude != 0)
+                & (df.pickup_latitude != 0)
+                & (df.dropoff_longitude != 0)
+                & (df.dropoff_latitude != 0)
+            )
+        ]
     else:
-        return df[((df.pickup_longitude != 0) & (df.pickup_latitude != 0)
-                   & (df.dropoff_longitude != 0) & (df.dropoff_latitude != 0))]
+        return df[
+            (
+                (df.pickup_longitude != 0)
+                & (df.pickup_latitude != 0)
+                & (df.dropoff_longitude != 0)
+                & (df.dropoff_latitude != 0)
+            )
+        ]
 
 
 def add_airport_dist(df):
@@ -86,7 +100,9 @@ def add_airport_dist(df):
 
 def add_datetime_info(df):
     # Convert to datetime format
-    df["pickup_datetime"] = pd.to_datetime(df["pickup_datetime"], format="%Y-%m-%d %H:%M:%S UTC")
+    df["pickup_datetime"] = pd.to_datetime(
+        df["pickup_datetime"], format="%Y-%m-%d %H:%M:%S UTC"
+    )
     df["timestamp_hour"] = df.pickup_datetime.dt.hour
     df["timestamp_day"] = df.pickup_datetime.dt.day
     df["timestamp_month"] = df.pickup_datetime.dt.month
@@ -96,21 +112,34 @@ def add_datetime_info(df):
 
 
 def radian_conv_step(df):
-    features = ["pickup_latitude", "pickup_longitude", "dropoff_latitude", "dropoff_longitude", ]
+    features = [
+        "pickup_latitude",
+        "pickup_longitude",
+        "dropoff_latitude",
+        "dropoff_longitude",
+    ]
     for feature in features:
         df[feature] = np.radians(df[feature])
     return df
 
 
 def sphere_dist_bear_step(df):
-    df["bearing"] = sphere_dist_bear(df["pickup_latitude"], df["pickup_longitude"],
-                                     df["dropoff_latitude"], df["dropoff_longitude"], )
+    df["bearing"] = sphere_dist_bear(
+        df["pickup_latitude"],
+        df["pickup_longitude"],
+        df["dropoff_latitude"],
+        df["dropoff_longitude"],
+    )
     return df
 
 
 def sphere_dist_step(df):
-    df["distance"] = sphere_dist(df["pickup_latitude"], df["pickup_longitude"],
-                                 df["dropoff_latitude"], df["dropoff_longitude"], )
+    df["distance"] = sphere_dist(
+        df["pickup_latitude"],
+        df["pickup_longitude"],
+        df["dropoff_latitude"],
+        df["dropoff_longitude"],
+    )
     return df
 
 
@@ -129,7 +158,10 @@ def sphere_dist(pickup_lat, pickup_lon, dropoff_lat, dropoff_lon):
     dlat = dropoff_lat - pickup_lat
     dlon = dropoff_lon - pickup_lon
     # Compute haversine distance
-    a = (np.sin(dlat / 2.0) ** 2 + np.cos(pickup_lat) * np.cos(dropoff_lat) * np.sin(dlon / 2.0) ** 2)
+    a = (
+        np.sin(dlat / 2.0) ** 2
+        + np.cos(pickup_lat) * np.cos(dropoff_lat) * np.sin(dlon / 2.0) ** 2
+    )
     return 2 * R_earth * np.arcsin(np.sqrt(a))
 
 

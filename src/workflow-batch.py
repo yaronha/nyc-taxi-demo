@@ -1,13 +1,9 @@
 import mlrun
 from kfp import dsl
-from mlrun.feature_store.steps import DateExtractor
 
 
 @dsl.pipeline(name="lgbm_ny_taxi_pipeline_batch_predict")
-def kfpipeline(
-        batch: str,
-        model: str
-):
+def kfpipeline(batch: str, model: str):
     # Get our project object:
     project = mlrun.get_current_project()
 
@@ -17,18 +13,18 @@ def kfpipeline(
         handler="data_preparation",
         name="data-prep",
         inputs={"dataset": batch},
-        params={'test_size':0},
-        outputs=["train_dataset", 'test_dataset', 'label'],
+        params={"test_size": 0},
+        outputs=["train_dataset", "test_dataset", "label"],
     )
 
     # batch
     batcing_run = project.run_function(
-        function='hub://batch_inference',
+        function="hub://batch_inference",
         inputs={
             "dataset": prepare_dataset_run.outputs["test_dataset"],
         },
         params={
             "model": model,
-            "perform_drift_analysis" : True,
+            "perform_drift_analysis": True,
         },
     ).after(prepare_dataset_run)
