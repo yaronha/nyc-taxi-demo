@@ -18,7 +18,7 @@ def pipeline(batch: str, model: str):
     )
 
     # batch
-    batcing_run = project.run_function(
+    project.run_function(
         function="hub://batch_inference",
         inputs={
             "dataset": prepare_dataset_run.outputs["test_dataset"],

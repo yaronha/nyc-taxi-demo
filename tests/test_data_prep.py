@@ -1,4 +1,6 @@
-from src.data_prep import *
+import pandas as pd
+
+from src.data_prep import clean_df, data_preparation
 
 
 def test_data_preparation_pipline():
