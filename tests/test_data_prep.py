@@ -24,4 +24,4 @@ def test_clean_df():
 
 
 def get_data():
-    return pd.read_csv("../data/dataset.csv")
+    return pd.read_csv("testset.csv")
