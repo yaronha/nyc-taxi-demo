@@ -1,10 +1,9 @@
 import mlrun
 from kfp import dsl
-from mlrun.feature_store.steps import DateExtractor
 
 
-@dsl.pipeline(name="lgbm_ny_taxi_pipeline")
-def kfpipeline(
+@dsl.pipeline(name="train_workflow")
+def pipeline(
     dataset: str,
 ):
     # Get our project object:
@@ -36,7 +35,7 @@ def kfpipeline(
     )
 
     # Evaluating
-    evaluating_run = mlrun.run_function(
+    mlrun.run_function(
         function="evaluate",
         name="evaluate",
         handler="evaluate",
@@ -49,30 +48,12 @@ def kfpipeline(
 
     # Get the function:
     serving_function = project.get_function("serving")
+    serving_function.spec.graph["predict_fare"].class_args["model_path"] = str(
+        training_run.outputs["model"]
+    )
 
     # Enable model monitoring
     serving_function.set_tracking()
-
-    if serving_function.spec.graph is None:
-        graph = serving_function.set_topology("flow", engine="async")
-
-        # Build the serving graph:
-        graph.to(handler="sphere_dist_bear_step", name="bearing_calculation").to(
-            handler="sphere_dist_step", name="distance_calculation"
-        ).to(
-            DateExtractor(
-                parts=["hour", "day", "month", "day_of_week", "year"],
-                timestamp_col="timestamp",
-            )
-        ).to(
-            handler="preprocess", name="peprocess"
-        ).to(
-            class_name="mlrun.frameworks.lgbm.LGBMModelServer",
-            name="lgbm_ny_taxi",
-            model_path=str(training_run.outputs["model"]),
-        ).to(
-            handler="postprocess", name="postprocess"
-        ).respond()
 
     # Deploy the serving function:
     project.deploy_function("serving").after(training_run)

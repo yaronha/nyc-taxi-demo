@@ -2,8 +2,8 @@ import mlrun
 from kfp import dsl
 
 
-@dsl.pipeline(name="lgbm_ny_taxi_pipeline_batch_predict")
-def kfpipeline(batch: str, model: str):
+@dsl.pipeline(name="predict_workflow")
+def pipeline(batch: str, model: str):
     # Get our project object:
     project = mlrun.get_current_project()
 
