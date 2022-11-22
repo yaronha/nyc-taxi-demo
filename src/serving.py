@@ -12,12 +12,13 @@ def preprocess(vector: Union[Dict]) -> Dict:
     return {"inputs": [[*vector.values()]]}
 
 
-def postprocess(model_response: Dict) -> str:
+def postprocess(model_response: Dict) -> Dict:
     """Transfering the prediction to the gradio interface.
 
     :param model_response: A dict with the model output
     """
-    return f'predicted fare amount is {model_response["outputs"][0]}'
+    return {'result': model_response["outputs"][0],
+            'result_str': f'predicted fare amount is {model_response["outputs"][0]}'}
 
 
 def sphere_dist_step(df):
