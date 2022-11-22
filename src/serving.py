@@ -18,7 +18,8 @@ def postprocess(model_response: Dict) -> Dict:
     :param model_response: A dict with the model output
     """
     return {'result': model_response["outputs"][0],
-            'result_str': f'predicted fare amount is {model_response["outputs"][0]}'}
+            'result_str': f'predicted fare amount is {model_response["outputs"][0]}',
+            'ok': model_response['ok']}
 
 
 def sphere_dist_step(df):

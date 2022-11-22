@@ -51,7 +51,7 @@ def model_server_tester(
         try:
             start = datetime.now()
             resp = serving_function.invoke(path='/predict', body=event_data)
-            if not resp.ok:
+            if not resp['ok']:
                 project.logger.error(f"bad function resp!!\n{resp.text}")
                 err_count += 1
                 continue
@@ -65,7 +65,7 @@ def model_server_tester(
             raise ValueError(f"reached error max limit = {max_error}")
 
         y_true.append(y)
-        y_pred.append(resp.json()["result"])
+        y_pred.append(resp["result"])
 
     score = r2_score(y_true, y_pred)
     times_arr = np.array(times)
