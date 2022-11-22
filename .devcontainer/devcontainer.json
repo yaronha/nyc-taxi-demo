@@ -14,7 +14,7 @@
 			"NODE_VERSION": "none"
 		}
 	},
-	"containerEnv": { "MLRUN_ENV_FILE": "${containerWorkspaceFolder}/mlrun.env", "SHARED_DIR": "~/mlrun-data" },
+	// "containerEnv": { "MLRUN_ENV_FILE": "${containerWorkspaceFolder}/mlrun.env", "SHARED_DIR": "~/mlrun-data" },
 	// Configure tool-specific properties.
 	"customizations": {
 		// Configure properties specific to VS Code.
