@@ -7,7 +7,8 @@ FROM mcr.microsoft.com/vscode/devcontainers/python:0-${VARIANT}
 # [Choice] Node.js version: none, lts/*, 16, 14, 12, 10
 ARG NODE_VERSION="none"
 RUN if [ "${NODE_VERSION}" != "none" ]; then su vscode -c "umask 0002 && . /usr/local/share/nvm/nvm.sh && nvm install ${NODE_VERSION} 2>&1"; fi
-RUN pip3 install mlrun==1.2.0-rc17 scikit-learn pytest lightgbm uvicorn~=0.17.0 dask-kubernetes~=0.11.0 apscheduler~=3.6 sqlite3-to-mysql~=1.4
+RUN pip3 install git+https://github.com/yaronha/mlrun.git@fix-get-logs-nok8s
+RUN pip3 install scikit-learn pytest lightgbm uvicorn~=0.17.0 dask-kubernetes~=0.11.0 apscheduler~=3.6 sqlite3-to-mysql~=1.4
 
 # [Optional] If your pip requirements rarely change, uncomment this section to add them to the image.
 # COPY requirements.txt /tmp/pip-tmp/
