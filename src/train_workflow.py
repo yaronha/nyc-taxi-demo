@@ -56,4 +56,14 @@ def pipeline(
     serving_function.set_tracking()
 
     # Deploy the serving function:
-    project.deploy_function("serving").after(training_run)
+    deploy_return = project.deploy_function("serving").after(training_run)
+
+    # Model server tester
+    mlrun.run_function(
+        function="server_tester",
+        name="server_tester",
+        inputs={"dataset": dataset},
+        params={
+            "label_columns": "fare_amount",
+        },
+    ).after(deploy_return)

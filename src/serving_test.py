@@ -22,38 +22,35 @@ from sklearn.metrics import r2_score
     ]
 )
 def model_server_tester(
-    table: DataItem,
-    addr: str,
+    dataset: DataItem,
     label_column: str = "label",
-    model: str = "",
     rows: int = 20,
     max_error: int = 5,
 ):
     """Test a model server
-    :param table:         csv/parquet table with test data
-    :param addr:          function address/url
+    :param dataset:         csv/parquet table with test data
     :param label_column:  name of the label column in table
-    :param model:         tested model name
     :param rows:          number of rows to use from test set
     :param max_error:     maximum error for
     """
 
     project = mlrun.get_current_project()
-    table = table.as_df()
-    if rows and rows < table.shape[0]:
-        table = table.sample(rows)
-    y_list = table.pop(label_column).values.tolist()
-    table = radian_conv_step(add_airport_dist(clean_df(table).dropna(how="any", axis="rows"))).drop(
+    dataset = dataset.as_df()
+    if rows and rows < dataset.shape[0]:
+        dataset = dataset.sample(rows)
+    y_list = dataset.pop(label_column).values.tolist()
+    dataset = radian_conv_step(add_airport_dist(clean_df(dataset).dropna(how="any", axis="rows"))).drop(
         columns=["key"]).rename(columns={'pickup_datetime': 'timestamp'})
 
     count = err_count = 0
     times, y_true, y_pred = [], [], []
-    for x, y in zip(table.values, y_list):
+    serving_function = project.get_function("serving")
+    for (_, x), y in zip(dataset.iterrows(), y_list):
         count += 1
-        event_data = json.dumps({"input": [x.todict()]})
+        event_data = x.todict()
         try:
             start = datetime.now()
-            resp = requests.put(f"{addr}/{model}/predict", json=event_data)
+            resp = serving_function.invoke(path='/predict', body=event_data)
             if not resp.ok:
                 project.logger.error(f"bad function resp!!\n{resp.text}")
                 err_count += 1
