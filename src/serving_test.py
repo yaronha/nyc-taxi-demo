@@ -65,7 +65,7 @@ def model_server_tester(
             raise ValueError(f"reached error max limit = {max_error}")
 
         y_true.append(y)
-        y_pred.append(resp.json()["pred"])
+        y_pred.append(resp.json()["result"])
 
     score = r2_score(y_true, y_pred)
     times_arr = np.array(times)
