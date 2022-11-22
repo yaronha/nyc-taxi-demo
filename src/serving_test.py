@@ -1,12 +1,9 @@
-import mlrun
-import requests
-import json
-import numpy as np
-
 from datetime import datetime
-from mlrun.datastore import DataItem
-from mlrun.artifacts import ChartArtifact
 
+import mlrun
+import numpy as np
+from mlrun.artifacts import ChartArtifact
+from mlrun.datastore import DataItem
 from sklearn.metrics import r2_score
 
 
@@ -39,8 +36,13 @@ def model_server_tester(
     if rows and rows < dataset.shape[0]:
         dataset = dataset.sample(rows)
     y_list = dataset.pop(label_column).values.tolist()
-    dataset = radian_conv_step(add_airport_dist(clean_df(dataset).dropna(how="any", axis="rows"))).drop(
-        columns=["key"]).rename(columns={'pickup_datetime': 'timestamp'})
+    dataset = (
+        radian_conv_step(
+            add_airport_dist(clean_df(dataset).dropna(how="any", axis="rows"))
+        )
+        .drop(columns=["key"])
+        .rename(columns={"pickup_datetime": "timestamp"})
+    )
 
     count = err_count = 0
     times, y_true, y_pred = [], [], []
@@ -50,8 +52,8 @@ def model_server_tester(
         event_data = x.todict()
         try:
             start = datetime.now()
-            resp = serving_function.invoke(path='/predict', body=event_data)
-            if not resp['ok']:
+            resp = serving_function.invoke(path="/predict", body=event_data)
+            if not resp["ok"]:
                 project.logger.error(f"bad function resp!!\n{resp.text}")
                 err_count += 1
                 continue
@@ -158,6 +160,7 @@ def radian_conv_step(df):
     for feature in features:
         df[feature] = np.radians(df[feature])
     return df
+
 
 # ---- Distance Calculation Formulas -------
 def sphere_dist(pickup_lat, pickup_lon, dropoff_lat, dropoff_lon):
