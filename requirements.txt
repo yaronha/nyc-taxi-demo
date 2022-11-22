@@ -2,5 +2,5 @@ lightgbm==3.3.3
 numpy==1.21.6
 pandas==1.3.5
 scikit-learn==1.0.2
-mlrun==1.2.0-rc10
+mlrun==1.2.0-rc15
 pytest==7.2.0
