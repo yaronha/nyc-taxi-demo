@@ -1,5 +1,7 @@
 
 PYTHON_INTERPRETER = python3
+SHARED_DIR := ~/mlrun-data
+MLARUN_TAG := 1.2.0-rc18
 
 #################################################################################
 # COMMANDS                                                                      #
@@ -53,7 +55,7 @@ flake8: ## Run flake8 lint
 test: clean ## Run tests
 	$(PYTHON_INTERPRETER) -m pytest -v --capture=no --disable-warnings -rf tests
 
-.PHONY: local-mlrun
-local-mlrun: ## Run MLRun DB locally
-	$(PYTHON_INTERPRETER) -m pip install uvicorn~=0.17.0 dask-kubernetes~=0.11.0 apscheduler~=3.6 sqlite3-to-mysql~=1.4
-	mlrun db -b
+.PHONY: start-mlrun
+start-mlrun: ## Start MLRun & Nuclio containers
+	mkdir $(SHARED_DIR) -p
+	SHARED_DIR=$(SHARED_DIR) HOST_IP=$$(ip route get 1.2.3.4 | awk '{print $$7}') TAG=$(MLARUN_TAG) docker-compose -f compose.yaml up
