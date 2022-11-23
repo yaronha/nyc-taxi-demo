@@ -20,18 +20,22 @@ from sklearn.metrics import r2_score
 )
 def model_server_tester(
     dataset: DataItem,
-    label_column: str = "label",
+    project_name: str,
+    label_column: str,
     rows: int = 20,
     max_error: int = 5,
 ):
     """Test a model server
+    :param project_name:
     :param dataset:         csv/parquet table with test data
     :param label_column:  name of the label column in table
     :param rows:          number of rows to use from test set
     :param max_error:     maximum error for
     """
 
-    project = mlrun.get_current_project()
+    project = mlrun.get_or_create_project(
+        name=project_name, user_project=True, context="./"
+    )
     dataset = dataset.as_df()
     if rows and rows < dataset.shape[0]:
         dataset = dataset.sample(rows)
@@ -47,13 +51,13 @@ def model_server_tester(
     count = err_count = 0
     times, y_true, y_pred = [], [], []
     serving_function = project.get_function("serving")
-    for (_, x), y in zip(dataset.iterrows(), y_list):
+    for i, y in zip(dataset.shape[0], y_list):
         count += 1
-        event_data = x.todict()
+        event_data = dataset.iloc[i].to_dict()
         try:
             start = datetime.now()
             resp = serving_function.invoke(path="/predict", body=event_data)
-            if not resp["ok"]:
+            if "result_str" not in resp:
                 project.logger.error(f"bad function resp!!\n{resp.text}")
                 err_count += 1
                 continue
