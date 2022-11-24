@@ -14,7 +14,11 @@
 			"NODE_VERSION": "none"
 		}
 	},
-	"containerEnv": { "MLRUN_ENV_FILE": "${containerWorkspaceFolder}/mlrun.env", "SHARED_DIR": "~/mlrun-data" },
+	"containerEnv": {
+		"MLRUN_ENV_FILE": "${containerWorkspaceFolder}/mlrun.env",
+		"SHARED_DIR": "~/mlrun-data",
+		"HHHHHHHHHH": "$(export XXX=$(ip route get 1.2.3.4 | awk '{print $7}'))"
+	},
 	// Configure tool-specific properties.
 	"customizations": {
 		// Configure properties specific to VS Code.
@@ -50,7 +54,8 @@
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "chmod +x /workspaces/tutorials/start.sh",
-	// "postStartCommand": "chmod +x /workspaces/tutorials/start.sh",
+	"postStartCommand": "export YYY=$(ip route get 1.2.3.4 | awk '{print $7}')",
+	"postStartCommand": "export XXX=$(ip route get 1.2.3.4 | awk '{print $7}')",
 
 	// Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
 	"remoteUser": "vscode",
