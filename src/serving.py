@@ -6,7 +6,7 @@ def preprocess(vector: Union[Dict]) -> Dict:
 
     :param vector: The input to predict
     """
-    vector.pop("timestamp")
+    vector.pop("pickup_datetime")
     vector.pop("key")
     return {"inputs": [[*vector.values()]]}
 
