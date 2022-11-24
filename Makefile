@@ -59,8 +59,6 @@ test: clean ## Run tests
 .PHONY: start-mlrun
 start-mlrun: ## Start MLRun & Nuclio containers
 	mkdir $(SHARED_DIR) -p
-	SHARED_DIR=$(SHARED_DIR) HOST_IP=$(HOST_IP) TAG=$(MLRUN_TAG) docker-compose -f compose.yaml up -d
-
-.PHONY: stop-mlrun
-stop-mlrun: ## Start MLRun & Nuclio containers
-	HOST_IP=$(HOST_IP) docker-compose -f compose.yaml down
+	@echo "HOST_IP=$(HOST_IP)" > .env
+	SHARED_DIR=$(SHARED_DIR) TAG=$(MLRUN_TAG) docker-compose -f compose.yaml up -d
+	@echo "use docker-compose stop / log commands to stop or view logs"
