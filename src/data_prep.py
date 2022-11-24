@@ -31,6 +31,8 @@ def data_preparation(dataset: pd.DataFrame, test_size=0.2):
         train, test = train_test_split(dataset, test_size=test_size)
     else:
         train, test = dataset, dataset
+    print(type(train))
+    print(type(test))
     return train, test, "fare_amount"
 
 
