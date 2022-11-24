@@ -20,7 +20,6 @@ def postprocess(model_response: Dict) -> Dict:
     return {
         "result": model_response["outputs"][0],
         "result_str": f'predicted fare amount is {model_response["outputs"][0]}',
-        "ok": model_response["ok"],
     }
 
 
