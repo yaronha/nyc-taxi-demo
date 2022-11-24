@@ -17,7 +17,8 @@
 	"containerEnv": {
 		"MLRUN_ENV_FILE": "${containerWorkspaceFolder}/mlrun.env",
 		"SHARED_DIR": "~/mlrun-data",
-		"HHHHHHHHHH": "$(export XXX=$(ip route get 1.2.3.4 | awk '{print $7}'))"
+		"HHHHHHHHHH": "$$(export XXX=$(ip route get 1.2.3.4 | awk '{print $7}'))",
+		"SSSSS": "${export XXX=$(ip route get 1.2.3.4 | awk '{print $7}')}"
 	},
 	// Configure tool-specific properties.
 	"customizations": {

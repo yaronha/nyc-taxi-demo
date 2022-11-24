@@ -1,7 +1,8 @@
 
 PYTHON_INTERPRETER = python3
-SHARED_DIR := ~/mlrun-data
-MLARUN_TAG := 1.2.0-rc18
+SHARED_DIR ?= ~/mlrun-data
+MLRUN_TAG ?= 1.2.0-rc18
+HOST_IP ?=$$(ip route get 1.2.3.4 | awk '{print $$7}')
 
 #################################################################################
 # COMMANDS                                                                      #
@@ -58,4 +59,8 @@ test: clean ## Run tests
 .PHONY: start-mlrun
 start-mlrun: ## Start MLRun & Nuclio containers
 	mkdir $(SHARED_DIR) -p
-	SHARED_DIR=$(SHARED_DIR) HOST_IP=$$(ip route get 1.2.3.4 | awk '{print $$7}') TAG=$(MLARUN_TAG) docker-compose -f compose.yaml up
+	SHARED_DIR=$(SHARED_DIR) HOST_IP=$(HOST_IP) TAG=$(MLRUN_TAG) docker-compose -f compose.yaml up -d
+
+.PHONY: stop-mlrun
+stop-mlrun: ## Start MLRun & Nuclio containers
+	HOST_IP=$(HOST_IP) docker-compose -f compose.yaml down
