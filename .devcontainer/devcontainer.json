@@ -58,5 +58,10 @@
 		"docker-from-docker": "latest",
 		"git": "latest",
 		"jupyterlab": "latest"
+	},
+	"hostRequirements": {
+	   "cpus": 8,
+	   "memory": "16gb",
+	   "storage": "64gb"
 	}
 }
