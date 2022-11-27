@@ -19,12 +19,13 @@ import plotly.express as px
 def model_server_tester(
     dataset: pd.DataFrame,
     project_name: str,
+    serving_function,
     label_column: str,
     rows: int = 100,
     max_error: int = 5,
 ):
     """Test a model server
-    :param project_name:
+    :param serving_function:
     :param dataset:         csv/parquet table with test data
     :param label_column:  name of the label column in table
     :param rows:          number of rows to use from test set
@@ -40,7 +41,6 @@ def model_server_tester(
 
     count = err_count = 0
     times, y_true, y_pred = [], [], []
-    serving_function = project.get_function("serving")
     for i, y in zip(range(dataset.shape[0]), y_list):
         count += 1
         event_data = dataset.iloc[i].to_dict()
