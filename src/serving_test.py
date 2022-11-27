@@ -37,7 +37,6 @@ def model_server_tester(
     if rows and rows < dataset.shape[0]:
         dataset = dataset.sample(rows)
     y_list = dataset.pop(label_column).values.tolist()
-    dataset = dataset.drop(columns=["key"])
 
     count = err_count = 0
     times, y_true, y_pred = [], [], []
