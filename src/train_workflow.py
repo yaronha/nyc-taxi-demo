@@ -13,12 +13,12 @@ def pipeline(dataset: str, project_name: str):
         name="data-prep",
         inputs={"dataset": dataset},
         outputs=["train_dataset", "test_dataset", "label"],
-        auto_build=True
+        auto_build=True,
     )
 
     # Training
     training_run = mlrun.run_function(
-        function='trainer',
+        function="trainer",
         name="trainer",
         inputs={"train_set": prepare_dataset_run.outputs["train_dataset"]},
         hyperparams={
@@ -29,7 +29,7 @@ def pipeline(dataset: str, project_name: str):
         },
         selector="min.mean_squared_error",
         outputs=["model"],
-        auto_build=True
+        auto_build=True,
     )
 
     # Evaluating
@@ -65,4 +65,5 @@ def pipeline(dataset: str, project_name: str):
             "label_column": "fare_amount",
             "project_name": project_name,
         },
+        auto_build=True,
     ).after(deploy_return)
