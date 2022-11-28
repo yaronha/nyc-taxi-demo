@@ -1,0 +1,85 @@
+kind: serving
+metadata:
+  name: serving
+  hash: 899cdb031abc0caa96feefb7ed201c69ccd1d962
+  project: ny-taxi-demo-davids
+  categories: []
+spec:
+  command: ''
+  args: []
+  image: mlrun/ml-models
+  build:
+    commands: []
+  description: ''
+  disable_auto_mount: false
+  env: []
+  resources:
+    requests:
+      memory: 1Mi
+      cpu: 25m
+    limits:
+      memory: 20Gi
+      cpu: '2'
+  priority_class_name: igz-workload-medium
+  preemption_mode: prevent
+  min_replicas: 1
+  max_replicas: 4
+  source: ''
+  function_kind: serving_v2
+  graph:
+    steps:
+      calculate_airport_distance:
+        kind: task
+        handler: src.data_prep.add_airport_dist
+      calculate_radian_conv:
+        kind: task
+        handler: src.data_prep.radian_conv_step
+        after:
+        - calculate_airport_distance
+      bearing_calculation:
+        kind: task
+        handler: src.data_prep.sphere_dist_bear_step
+        after:
+        - calculate_radian_conv
+      distance_calculation:
+        kind: task
+        handler: src.data_prep.sphere_dist_step
+        after:
+        - bearing_calculation
+      DateExtractor:
+        kind: task
+        class_name: mlrun.feature_store.steps.DateExtractor
+        class_args:
+          parts:
+          - hour
+          - day
+          - month
+          - day_of_week
+          - year
+          timestamp_col: pickup_datetime
+        after:
+        - distance_calculation
+      preprocess:
+        kind: task
+        handler: src.serving.preprocess
+        after:
+        - DateExtractor
+      predict_fare:
+        kind: task
+        class_name: mlrun.frameworks.lgbm.LGBMModelServer
+        class_args:
+          model_path: store://models/ny-taxi-demo-davids/lgbm_ny_taxi#0:e4151254c0764206809a8115108608ed
+        after:
+        - preprocess
+      postprocess:
+        kind: task
+        handler: src.serving.postprocess
+        after:
+        - predict_fare
+        responder: true
+    engine: async
+  secret_sources: []
+  affinity: null
+  tolerations: null
+  security_context: {}
+verbose: false
