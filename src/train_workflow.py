@@ -3,25 +3,22 @@ from kfp import dsl
 
 
 @dsl.pipeline(name="train_workflow")
-def pipeline(
-    dataset: str,
-):
+def pipeline(dataset: str, project_name: str):
     # Get our project object:
     project = mlrun.get_current_project()
 
     # Dataset Preparation:
     prepare_dataset_run = mlrun.run_function(
         function="data-prep",
-        handler="data_preparation",
         name="data-prep",
         inputs={"dataset": dataset},
         outputs=["train_dataset", "test_dataset", "label"],
+        auto_build=True,
     )
 
     # Training
     training_run = mlrun.run_function(
         function="trainer",
-        handler="train",
         name="trainer",
         inputs={"train_set": prepare_dataset_run.outputs["train_dataset"]},
         hyperparams={
@@ -32,6 +29,7 @@ def pipeline(
         },
         selector="min.mean_squared_error",
         outputs=["model"],
+        auto_build=True,
     )
 
     # Evaluating
@@ -56,4 +54,16 @@ def pipeline(
     serving_function.set_tracking()
 
     # Deploy the serving function:
-    project.deploy_function("serving").after(training_run)
+    deploy_return = project.deploy_function("serving").after(training_run)
+
+    # Model server tester
+    mlrun.run_function(
+        function="server_tester",
+        name="server_tester",
+        inputs={"dataset": dataset},
+        params={
+            "label_column": "fare_amount",
+            "project_name": project_name,
+        },
+        auto_build=True,
+    ).after(deploy_return)

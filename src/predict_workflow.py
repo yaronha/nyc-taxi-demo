@@ -10,7 +10,6 @@ def pipeline(batch: str, model: str):
     # Dataset Preparation:
     prepare_dataset_run = mlrun.run_function(
         function="data-prep",
-        handler="data_preparation",
         name="data-prep",
         inputs={"dataset": batch},
         params={"test_size": 0},
