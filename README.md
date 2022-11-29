@@ -55,8 +55,7 @@ If your environment is minimal or you are in Sagemaker run mlrun as a process (n
  
 For MLRun to run properly you should set your client environment, this is not required when using **codespaces**, the mlrun **conda** environment, or **iguazio** managed notebooks.
 
-Your environment should include `MLRUN_ENV_FILE=<absolute path to the ./mlrun.env file> ` (point to the mlrun .env file in this repo)  
-, see [mlrun client setup](https://docs.mlrun.org/en/latest/install/remote.html) instructions for details.  
+Your environment should include `MLRUN_ENV_FILE=<absolute path to the ./mlrun.env file> ` (point to the mlrun .env file in this repo), see [mlrun client setup](https://docs.mlrun.org/en/latest/install/remote.html) instructions for details.  
      
 > Note: You can also use a remote MLRun service (over Kubernetes), instead of starting a local mlrun, 
 > edit the [mlrun.env](./mlrun.env) and specify its address and credentials  
