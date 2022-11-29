@@ -80,5 +80,5 @@ conda-env: ## Create a conda environment
 	conda create -n $(CONDA_ENV) -y python=$(CONDA_PY_VER) ipykernel graphviz pip
 	test -s ./mlrun.env && conda env config vars set -n $(CONDA_ENV) MLRUN_ENV_FILE=$$(realpath ./mlrun.env)
 	@echo "Installing requirements.txt..."
-	$(CONDA_ACTIVATE) $(CONDA_ENV); pip install -r requirements.txt
+	$(CONDA_ACTIVATE) $(CONDA_ENV); pip install -r requirements.txt -r dev-requirements.txt
 	@echo -e "\nTo run mlrun API as a local process type:\n  conda activate $(CONDA_ENV) && make mlrun-api"

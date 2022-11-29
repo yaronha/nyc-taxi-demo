@@ -1,21 +1,28 @@
 # NYC Taxi Tutorial
 
-This project demonstrates how to build an ML application and use MLOps to operationalize it.
+[![Open In Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/yaronha/nyc-taxi-demo/blob/main/open-in-sagemaker.ipynb)
 
-- [**Notebooks and code**](#notebooks)
+This project demonstrates a complete ML project and the development flow from initial exploration to continuous deployment at scale.
+The example is based on a [Kaggle competition](https://www.kaggle.com/competitions/new-york-city-taxi-fare-prediction). 
+It uses the public NYC Taxi dataset and its goal is to predict the correct trip fare. This example demonstrates the overall MLOps flow and is not intended to dive into the individual components or model.
+
+- [**Overview**](#overview)
 - [**Installation (local, GitHub codespaces, Sagemaker)**](#installation)
 
-<a id="notebooks"></a>
-## Notebooks and code 
+<a id="overview"></a>
+## Overview 
 
-The project contains four notebooks, in the following order:
+ML application development and productization flow consists of the following steps (demonstrated through notebooks):
 
-- [**Exploratory Data Analysis**](./00-exploratory-data-analysis.ipynb)
-- [**Data preparation, training and evaluating a model**](./01-dataprep-train-test.ipynb)
-- [**Application Serving Pipeline**](./02-serving-pipeline.ipynb)
-- [**Pipeline Automation and Model Monitoring**](./03-automation-monitoring.ipynb)
+- [**Exploratory data analysis (EDA) and modeling**](./00-exploratory-data-analysis.ipynb).
+- [**Data and model pipeline development**](./01-dataprep-train-test.ipynb) (data preparation, training, evaluation and so on).
+- [**Application & serving pipeline development**](./02-serving-pipeline.ipynb) (intercept requests, process data, inference and so on).
+- [**Scaling and automation**](./03-automation-monitoring.ipynb) (run at scale, hyper-parameter tuning, monitoring, pipeline automation and so on).
+- Continuous operations (automated tests, CI/CD integration, upgrades, retraining, live ops and so on).
 
-You can find the python source code under [/src](./src)
+<img src="./images/project-dev-flow.png" alt="project-dev-flow"/><br>
+
+You can find the python source code under [/src](./src) and the tests unset [/tests](./tests).
 
 <a id="installation"></a>
 ## Installation
@@ -23,7 +30,8 @@ You can find the python source code under [/src](./src)
 This project can run in different development environments:
 1. Local computer (using PyCharm, VSCode, Jupyter, etc.)
 2. Inside GitHub Codespaces 
-3. Sagemaker studio and Studio Labs (free edition) or other managed Jupyter environments
+3. Sagemaker studio and Studio Labs (free edition) or other managed Jupyter environments [![Open In Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/yaronha/nyc-taxi-demo/blob/main/open-in-sagemaker.ipynb)
+
 
 ### Install the code and mlrun client 
 
