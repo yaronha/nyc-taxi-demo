@@ -1,5 +1,12 @@
 
 PYTHON_INTERPRETER = python3
+SHARED_DIR ?= ~/mlrun-data
+MLRUN_TAG ?= 1.2.0-rc21
+HOST_IP ?=$$(ip route get 1.2.3.4 | awk '{print $$7}')
+CONDA_ENV ?= mlrun
+SHELL=/bin/bash
+CONDA_PY_VER ?= 3.9
+CONDA_ACTIVATE = source $$(conda info --base)/etc/profile.d/conda.sh ; conda activate ; conda activate
 
 #################################################################################
 # COMMANDS                                                                      #
@@ -53,7 +60,25 @@ flake8: ## Run flake8 lint
 test: clean ## Run tests
 	$(PYTHON_INTERPRETER) -m pytest -v --capture=no --disable-warnings -rf tests
 
-.PHONY: local-mlrun
-local-mlrun: ## Run MLRun DB locally
+.PHONY: mlrun-docker
+mlrun-docker: ## Start MLRun & Nuclio containers (using Docker compose)
+	mkdir $(SHARED_DIR) -p
+	@echo "HOST_IP=$(HOST_IP)" > .env
+	SHARED_DIR=$(SHARED_DIR) TAG=$(MLRUN_TAG) docker-compose -f compose.yaml up -d
+	@echo "use docker-compose stop / logs commands to stop or view logs"
+
+.PHONY: mlrun-api
+mlrun-api: ## Run MLRun DB locally (as process)
+	@echo "Installing MLRun API dependencies ..."
 	$(PYTHON_INTERPRETER) -m pip install uvicorn~=0.17.0 dask-kubernetes~=0.11.0 apscheduler~=3.6 sqlite3-to-mysql~=1.4
-	mlrun db -b
+	@echo "Starting local mlrun..."
+	MLRUN_ARTIFACT_PATH=$$(realpath ./artifacts) MLRUN_ENV_FILE= mlrun db -b
+
+.PHONY: conda-env
+conda-env: ## Create a conda environment
+	@echo "Creating new conda environment $(CONDA_ENV)..."
+	conda create -n $(CONDA_ENV) -y python=$(CONDA_PY_VER) ipykernel graphviz pip
+	test -s ./mlrun.env && conda env config vars set -n $(CONDA_ENV) MLRUN_ENV_FILE=$$(realpath ./mlrun.env)
+	@echo "Installing requirements.txt..."
+	$(CONDA_ACTIVATE) $(CONDA_ENV); pip install -r requirements.txt
+	@echo -e "\nTo run mlrun API as a local process type:\n  conda activate $(CONDA_ENV) && make mlrun-api"
