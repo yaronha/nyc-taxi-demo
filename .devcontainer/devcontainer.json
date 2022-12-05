@@ -17,7 +17,7 @@
 	"containerEnv": {
 		"MLRUN_ENV_FILE": "${containerWorkspaceFolder}/mlrun.env",
 		"SHARED_DIR": "~/mlrun-data",
-		"MLRUN_TAG": "1.2.0-rc21"
+		"MLRUN_TAG": "1.2.0"
 	},
 	// Configure tool-specific properties.
 	"customizations": {

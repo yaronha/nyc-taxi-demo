@@ -1,7 +1,7 @@
 
 PYTHON_INTERPRETER = python3
 SHARED_DIR ?= ~/mlrun-data
-MLRUN_TAG ?= 1.2.0-rc21
+MLRUN_TAG ?= 1.2.0
 HOST_IP ?=$$(ip route get 1.2.3.4 | awk '{print $$7}')
 CONDA_ENV ?= mlrun
 SHELL=/bin/bash
@@ -72,7 +72,7 @@ mlrun-api: ## Run MLRun DB locally (as process)
 	@echo "Installing MLRun API dependencies ..."
 	$(PYTHON_INTERPRETER) -m pip install uvicorn~=0.17.0 dask-kubernetes~=0.11.0 apscheduler~=3.6 sqlite3-to-mysql~=1.4
 	@echo "Starting local mlrun..."
-	MLRUN_ARTIFACT_PATH=$$(realpath ./artifacts) MLRUN_ENV_FILE= mlrun db -b
+	MLRUN_ARTIFACT_PATH=$$(realpath ./artifacts) mlrun db -b
 
 .PHONY: conda-env
 conda-env: ## Create a conda environment
