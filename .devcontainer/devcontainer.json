@@ -54,7 +54,7 @@
 	// "runArgs": [ "--network", "host"],
 	"portsAttributes": {"8060": {"label": "MLRun UI"}, "8070": {"label": "Nuclio UI"}, "8080": {"label": "MLRun API"}},
 
-	"waitFor": "onCreateCommand",
+	// "waitFor": "onCreateCommand",
 	"updateContentCommand": "python3 -m pip install -r requirements.txt",
 
 	// Use 'postCreateCommand' to run commands after the container is created.
@@ -65,8 +65,8 @@
 	"remoteUser": "vscode",
 	"features": {
 		"docker-from-docker": "latest",
-		"git": "latest",
-		"jupyterlab": "latest"
+		"git": "latest"
+		// "jupyterlab": "latest"
 	},
 	"hostRequirements": {
 	   "cpus": 4
