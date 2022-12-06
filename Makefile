@@ -70,9 +70,9 @@ mlrun-docker: ## Start MLRun & Nuclio containers (using Docker compose)
 .PHONY: mlrun-api
 mlrun-api: ## Run MLRun DB locally (as process)
 	@echo "Installing MLRun API dependencies ..."
-	$(PYTHON_INTERPRETER) -m pip install uvicorn~=0.17.0 dask-kubernetes~=0.11.0 apscheduler~=3.6 sqlite3-to-mysql~=1.4
+	$(PYTHON_INTERPRETER) -m pip install mlrun[api]==$(MLRUN_TAG)
 	@echo "Starting local mlrun..."
-	MLRUN_ARTIFACT_PATH=$$(realpath ./artifacts) mlrun db -b
+	MLRUN_ENV_FILE= MLRUN_ARTIFACT_PATH=$$(realpath ./artifacts) mlrun db -b
 
 .PHONY: conda-env
 conda-env: ## Create a conda environment
