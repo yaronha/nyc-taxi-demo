@@ -4,6 +4,7 @@ import mlrun
 import numpy as np
 import pandas as pd
 import plotly.express as px
+import requests
 
 
 @mlrun.handler(
@@ -17,51 +18,50 @@ import plotly.express as px
     ]
 )
 def model_server_tester(
+    context: mlrun.MLClientCtx,
     dataset: pd.DataFrame,
-    project_name: str,
+    model_name: str,
+    model_addr: str,
     label_column: str,
     rows: int = 100,
     max_error: int = 5,
 ):
     """Test a model server
-    :param project_name:
-    :param dataset:         csv/parquet table with test data
+    :param context:       mlrun context
+    :param model_addr:    address of the running model
+    :param model_name:    name of the running model
+    :param dataset:       csv/parquet table with test data
     :param label_column:  name of the label column in table
     :param rows:          number of rows to use from test set
     :param max_error:     maximum error for
     """
 
-    project = mlrun.get_or_create_project(
-        name=project_name, user_project=True, context="./"
-    )
     if rows and rows < dataset.shape[0]:
         dataset = dataset.sample(rows)
     y_list = dataset.pop(label_column).values.tolist()
 
     count = err_count = 0
     times, y_true, y_pred = [], [], []
-    serving_function = project.get_function("serving")
     for i, y in zip(range(dataset.shape[0]), y_list):
         count += 1
         event_data = dataset.iloc[i].to_dict()
         try:
             start = datetime.now()
-            resp = serving_function.invoke(path="/predict", body=event_data)
-            if "result_str" not in resp:
-                project.logger.error(f"bad function resp!!\n{resp.text}")
+            resp = requests.put(
+                f"{model_addr}/v2/models/{model_name}/infer", json=event_data
+            )
+            if not resp.ok:
+                context.logger.error(f"bad function resp!!\n{resp.text}")
                 err_count += 1
                 continue
             times.append((datetime.now() - start).microseconds)
 
         except OSError as err:
-            project.logger.error(f"error in request, data:{event_data}, error: {err}")
+            context.logger.error(f"error in request, data:{event_data}, error: {err}")
             err_count += 1
             continue
         if err_count == max_error:
             raise ValueError(f"reached error max limit = {max_error}")
-
-        y_true.append(y)
-        y_pred.append(resp["result"])
 
     times_arr = np.array(times)
     latency_chart = px.line(
