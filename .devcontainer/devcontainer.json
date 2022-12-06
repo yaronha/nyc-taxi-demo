@@ -1,7 +1,7 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.236.0/containers/python-3
 {
-	"name": "MLRun NYC Taxi Tutorial",
+	"name": "MLRun Tutorial - NYC Taxi Fare",
 //	"image": "docker.io/yhaviv/mlrun-cs:dev",
 	"build": {
 		"dockerfile": "Dockerfile",
