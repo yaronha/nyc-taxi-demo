@@ -2,18 +2,19 @@
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.236.0/containers/python-3
 {
 	"name": "MLRun NYC Taxi Tutorial",
-	"build": {
-		"dockerfile": "Dockerfile",
-		"context": "..",
-		"args": { 
-			// Update 'VARIANT' to pick a Python version: 3, 3.10, 3.9, 3.8, 3.7, 3.6
-			// Append -bullseye or -buster to pin to an OS version.
-			// Use -bullseye variants on local on arm64/Apple Silicon.
-			"VARIANT": "3.8",
-			// Options
-			"NODE_VERSION": "none"
-		}
-	},
+	"image": "docker.io/yhaviv/mlrun-cs:dev",
+//	"build": {
+//		"dockerfile": "Dockerfile",
+//		"context": "..",
+//		"args": {
+//			// Update 'VARIANT' to pick a Python version: 3, 3.10, 3.9, 3.8, 3.7, 3.6
+//			// Append -bullseye or -buster to pin to an OS version.
+//			// Use -bullseye variants on local on arm64/Apple Silicon.
+//			"VARIANT": "3.9",
+//			// Options
+//			"NODE_VERSION": "none"
+//		}
+//	},
 	"containerEnv": {
 		"MLRUN_ENV_FILE": "${containerWorkspaceFolder}/mlrun.env",
 		"SHARED_DIR": "~/mlrun-data",
@@ -42,7 +43,8 @@
 			// Add the IDs of extensions you want installed when the container is created.
 			"extensions": [
 				"ms-python.python",
-				"ms-python.vscode-pylance"
+				"ms-python.vscode-pylance",
+				"ms-toolsai.jupyter"
 			]
 		}
 	},
@@ -51,6 +53,9 @@
 	"forwardPorts": [8060, 8070, 8080],
 	// "runArgs": [ "--network", "host"],
 	"portsAttributes": {"8060": {"label": "MLRun UI"}, "8070": {"label": "Nuclio UI"}, "8080": {"label": "MLRun API"}},
+
+	"waitFor": "onCreateCommand",
+	"updateContentCommand": "python3 -m pip install -r requirements.txt",
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "chmod +x /workspaces/tutorials/start.sh",
@@ -64,8 +69,6 @@
 		"jupyterlab": "latest"
 	},
 	"hostRequirements": {
-	   "cpus": 4,
-	   "memory": "8gb",
-	   "storage": "32gb"
+	   "cpus": 4
 	}
 }
