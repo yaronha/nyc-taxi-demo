@@ -65,8 +65,8 @@
 	"remoteUser": "vscode",
 	"features": {
 		"docker-from-docker": "latest",
-		"git": "latest"
-		// "jupyterlab": "latest"
+		"git": "latest",
+		"jupyterlab": "latest"
 	},
 	"hostRequirements": {
 	   "cpus": 4
