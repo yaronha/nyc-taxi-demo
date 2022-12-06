@@ -41,7 +41,7 @@ def model_server_tester(
     y_list = dataset.pop(label_column).values.tolist()
 
     count = err_count = 0
-    times, y_true, y_pred = [], [], []
+    times = []
     for i, y in zip(range(dataset.shape[0]), y_list):
         count += 1
         event_data = dataset.iloc[i].to_dict()
