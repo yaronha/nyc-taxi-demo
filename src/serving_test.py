@@ -20,7 +20,8 @@ import requests
 def model_server_tester(
     context: mlrun.MLClientCtx,
     dataset: pd.DataFrame,
-    end_point: str,
+    project_name: str,
+    serving_func_name: str,
     label_column: str,
     rows: int = 100,
     max_error: int = 5,
@@ -45,7 +46,11 @@ def model_server_tester(
         event_data = dataset.iloc[i].to_dict()
         try:
             start = datetime.now()
-            resp = requests.put(f"{end_point}/predict", json=event_data)
+            resp = requests.post(
+                f"http://{project_name}-{serving_func_name}-{project_name}"
+                f".default-tenant.app.dev6.lab.iguazeng.com/predict",
+                json=event_data,
+            )
             if not resp.ok:
                 context.logger.error(f"bad function resp!!\n{resp.text}")
                 err_count += 1

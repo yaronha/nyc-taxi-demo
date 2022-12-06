@@ -3,7 +3,7 @@ from kfp import dsl
 
 
 @dsl.pipeline(name="train_workflow")
-def pipeline(dataset: str):
+def pipeline(dataset: str, project_name: str):
     # Get our project object:
     project = mlrun.get_current_project()
 
@@ -63,7 +63,8 @@ def pipeline(dataset: str):
         inputs={"dataset": dataset},
         params={
             "label_column": "fare_amount",
-            "end_point": deploy_return.outputs["end_point"],
+            "project_name": project_name,
+            "serving_func_name": "serving",
         },
         auto_build=True,
     ).after(deploy_return)
