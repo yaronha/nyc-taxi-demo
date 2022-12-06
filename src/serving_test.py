@@ -20,16 +20,14 @@ import requests
 def model_server_tester(
     context: mlrun.MLClientCtx,
     dataset: pd.DataFrame,
-    model_name: str,
-    model_addr: str,
+    end_point: str,
     label_column: str,
     rows: int = 100,
     max_error: int = 5,
 ):
     """Test a model server
     :param context:       mlrun context
-    :param model_addr:    address of the running model
-    :param model_name:    name of the running model
+    :param end_point:
     :param dataset:       csv/parquet table with test data
     :param label_column:  name of the label column in table
     :param rows:          number of rows to use from test set
@@ -47,9 +45,7 @@ def model_server_tester(
         event_data = dataset.iloc[i].to_dict()
         try:
             start = datetime.now()
-            resp = requests.put(
-                f"{model_addr}/v2/models/{model_name}/infer", json=event_data
-            )
+            resp = requests.put(f"{end_point}/predict", json=event_data)
             if not resp.ok:
                 context.logger.error(f"bad function resp!!\n{resp.text}")
                 err_count += 1
