@@ -38,7 +38,7 @@ def data_preparation(dataset: pd.DataFrame, test_size=0.2):
 def clean_df(df):
     if "fare_amount" in df.columns:
         return df.drop(
-            df[
+            df.iloc[
                 (df.fare_amount <= 0)
                 | (df.fare_amount > 500)
                 | (
@@ -51,7 +51,7 @@ def clean_df(df):
         )
     else:
         return df.drop(
-            df[
+            df.iloc[
                 (
                     (df.pickup_longitude == 0)
                     | (df.pickup_latitude == 0)
