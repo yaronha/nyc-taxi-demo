@@ -48,9 +48,7 @@ def model_server_tester(
         event_data = dataset.iloc[i].to_dict()
         try:
             start = datetime.now()
-            resp = requests.post(
-                f"{endpoint}/v2/models/{model_name}/infer", json=event_data
-            )
+            resp = requests.post(f"{endpoint}/predict", json=event_data)
             if not resp.ok:
                 context.logger.error(f"bad function resp!!\n{resp.text}")
                 err_count += 1
