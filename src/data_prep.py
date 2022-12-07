@@ -39,13 +39,13 @@ def clean_df(df):
     if "fare_amount" in df.columns:
         return df.drop(
             df[
-                (df.fare_amount > 0)
-                & (df.fare_amount <= 500)
-                & (
-                    (df.pickup_longitude != 0)
-                    & (df.pickup_latitude != 0)
-                    & (df.dropoff_longitude != 0)
-                    & (df.dropoff_latitude != 0)
+                (df.fare_amount <= 0)
+                | (df.fare_amount > 500)
+                | (
+                    (df.pickup_longitude == 0)
+                    | (df.pickup_latitude == 0)
+                    | (df.dropoff_longitude == 0)
+                    | (df.dropoff_latitude == 0)
                 )
             ].index
         )
@@ -53,10 +53,10 @@ def clean_df(df):
         return df.drop(
             df[
                 (
-                    (df.pickup_longitude != 0)
-                    & (df.pickup_latitude != 0)
-                    & (df.dropoff_longitude != 0)
-                    & (df.dropoff_latitude != 0)
+                    (df.pickup_longitude == 0)
+                    | (df.pickup_latitude == 0)
+                    | (df.dropoff_longitude == 0)
+                    | (df.dropoff_latitude == 0)
                 )
             ].index
         )
