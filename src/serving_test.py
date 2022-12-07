@@ -39,15 +39,18 @@ def model_server_tester(
     if rows and rows < dataset.shape[0]:
         dataset = dataset.sample(rows)
     y_list = dataset.pop(label_column).values.tolist()
-    print(endpoint)
     count = err_count = 0
     times = []
     for i, y in zip(range(dataset.shape[0]), y_list):
+        if err_count == max_error:
+            raise ValueError(f"reached error max limit = {max_error}")
         count += 1
         event_data = dataset.iloc[i].to_dict()
         try:
             start = datetime.now()
-            resp = requests.put(f"{endpoint}/v2/models/{model_name}/infer", json=event_data)
+            resp = requests.put(
+                f"{endpoint}/v2/models/{model_name}/infer", json=event_data
+            )
             if not resp.ok:
                 context.logger.error(f"bad function resp!!\n{resp.text}")
                 err_count += 1
@@ -58,8 +61,6 @@ def model_server_tester(
             context.logger.error(f"error in request, data:{event_data}, error: {err}")
             err_count += 1
             continue
-        if err_count == max_error:
-            raise ValueError(f"reached error max limit = {max_error}")
 
     times_arr = np.array(times)
     latency_chart = px.line(
