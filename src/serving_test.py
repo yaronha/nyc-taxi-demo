@@ -21,14 +21,12 @@ def model_server_tester(
     context: mlrun.MLClientCtx,
     dataset: pd.DataFrame,
     endpoint: str,
-    model_name: str,
     label_column: str,
     rows: int = 100,
     max_error: int = 5,
 ):
     """Test a model server
     :param context:       mlrun context
-    :param model_name:
     :param endpoint:
     :param dataset:       csv/parquet table with test data
     :param label_column:  name of the label column in table

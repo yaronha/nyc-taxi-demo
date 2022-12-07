@@ -63,8 +63,7 @@ def pipeline(dataset: str, project_name: str):
         inputs={"dataset": dataset},
         params={
             "label_column": "fare_amount",
-            "project_name": project_name,
-            "serving_func_name": "serving",
+            "endpoint": deploy_return.outputs["endpoint"],
         },
         auto_build=True,
     ).after(deploy_return)
