@@ -20,15 +20,16 @@ import requests
 def model_server_tester(
     context: mlrun.MLClientCtx,
     dataset: pd.DataFrame,
-    project_name: str,
-    serving_func_name: str,
+    endpoint: str,
+    model_name: str,
     label_column: str,
     rows: int = 100,
     max_error: int = 5,
 ):
     """Test a model server
     :param context:       mlrun context
-    :param end_point:
+    :param model_name:
+    :param endpoint:
     :param dataset:       csv/parquet table with test data
     :param label_column:  name of the label column in table
     :param rows:          number of rows to use from test set
@@ -38,7 +39,7 @@ def model_server_tester(
     if rows and rows < dataset.shape[0]:
         dataset = dataset.sample(rows)
     y_list = dataset.pop(label_column).values.tolist()
-
+    print(endpoint)
     count = err_count = 0
     times = []
     for i, y in zip(range(dataset.shape[0]), y_list):
@@ -46,11 +47,7 @@ def model_server_tester(
         event_data = dataset.iloc[i].to_dict()
         try:
             start = datetime.now()
-            resp = requests.post(
-                f"http://{project_name}-{serving_func_name}-{project_name}"
-                f".default-tenant.app.dev6.lab.iguazeng.com/predict",
-                json=event_data,
-            )
+            resp = requests.put(f"{endpoint}/v2/models/{model_name}/infer", json=event_data)
             if not resp.ok:
                 context.logger.error(f"bad function resp!!\n{resp.text}")
                 err_count += 1
