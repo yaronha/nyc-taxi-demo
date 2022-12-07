@@ -48,7 +48,7 @@ def model_server_tester(
         event_data = dataset.iloc[i].to_dict()
         try:
             start = datetime.now()
-            resp = requests.put(
+            resp = requests.post(
                 f"{endpoint}/v2/models/{model_name}/infer", json=event_data
             )
             if not resp.ok:
