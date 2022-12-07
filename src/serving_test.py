@@ -41,6 +41,7 @@ def model_server_tester(
     y_list = dataset.pop(label_column).values.tolist()
     count = err_count = 0
     times = []
+    print(endpoint)
     for i, y in zip(range(dataset.shape[0]), y_list):
         if err_count == max_error:
             raise ValueError(f"reached error max limit = {max_error}")
