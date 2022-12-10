@@ -71,7 +71,6 @@ mlrun-docker: ## Start MLRun & Nuclio containers (using Docker compose)
 mlrun-api: ## Run MLRun DB locally (as process)
 	@echo "Installing MLRun API dependencies ..."
 	$(PYTHON_INTERPRETER) -m pip install mlrun[api]==$(MLRUN_TAG)
-	@echo "Starting local mlrun..."
 	MLRUN_ENV_FILE= MLRUN_ARTIFACT_PATH=$$(realpath ./artifacts) mlrun db -b
 
 .PHONY: conda-env
