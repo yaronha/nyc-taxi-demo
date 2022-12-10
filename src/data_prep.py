@@ -37,25 +37,29 @@ def data_preparation(dataset: pd.DataFrame, test_size=0.2):
 # ---- STEPS -------
 def clean_df(df):
     if "fare_amount" in df.columns:
-        return df[
-            (df.fare_amount > 0)
-            & (df.fare_amount <= 500)
-            & (
-                (df.pickup_longitude != 0)
-                & (df.pickup_latitude != 0)
-                & (df.dropoff_longitude != 0)
-                & (df.dropoff_latitude != 0)
-            )
-        ]
+        return df.drop(
+            df.loc[
+                (df.fare_amount <= 0)
+                | (df.fare_amount > 500)
+                | (
+                    (df.pickup_longitude == 0)
+                    | (df.pickup_latitude == 0)
+                    | (df.dropoff_longitude == 0)
+                    | (df.dropoff_latitude == 0)
+                )
+            ].index
+        )
     else:
-        return df[
-            (
-                (df.pickup_longitude != 0)
-                & (df.pickup_latitude != 0)
-                & (df.dropoff_longitude != 0)
-                & (df.dropoff_latitude != 0)
-            )
-        ]
+        return df.drop(
+            df.loc[
+                (
+                    (df.pickup_longitude == 0)
+                    | (df.pickup_latitude == 0)
+                    | (df.dropoff_longitude == 0)
+                    | (df.dropoff_latitude == 0)
+                )
+            ].index
+        )
 
 
 def add_airport_dist(df):
