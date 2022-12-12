@@ -1,11 +1,12 @@
 
 PYTHON_INTERPRETER = python3
 SHARED_DIR ?= ~/mlrun-data
+HOST_MNT_DIR ?= $(SHARED_DIR)
 MLRUN_TAG ?= 1.2.0
 HOST_IP ?=$$(ip route get 1.2.3.4 | awk '{print $$7}')
 CONDA_ENV ?= mlrun
 SHELL=/bin/bash
-CONDA_PY_VER ?= 3.9
+CONDA_PY_VER ?= 3.8
 CONDA_ACTIVATE = source $$(conda info --base)/etc/profile.d/conda.sh ; conda activate ; conda activate
 
 #################################################################################
@@ -64,7 +65,7 @@ test: clean ## Run tests
 mlrun-docker: ## Start MLRun & Nuclio containers (using Docker compose)
 	mkdir $(SHARED_DIR) -p
 	@echo "HOST_IP=$(HOST_IP)" > .env
-	SHARED_DIR=$(SHARED_DIR) TAG=$(MLRUN_TAG) docker-compose -f compose.yaml up -d
+	SHARED_DIR=$(SHARED_DIR) HOST_MNT_DIR=$(HOST_MNT_DIR) TAG=$(MLRUN_TAG) docker-compose -f compose.yaml up -d
 	@echo "use docker-compose stop / logs commands to stop or view logs"
 
 .PHONY: mlrun-api

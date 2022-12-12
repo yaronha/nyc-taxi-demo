@@ -20,7 +20,7 @@ services:
             - volume:
                 name: mlrun-stuff
                 hostPath:
-                  path: ${SHARED_DIR:?err}
+                  path: ${HOST_MNT_DIR:?err}
               volumeMount:
                 name: mlrun-stuff
                 mountPath: ${SHARED_DIR:?err}
@@ -56,7 +56,7 @@ services:
       # let mlrun control nuclio resources
       MLRUN_HTTPDB__PROJECTS__FOLLOWERS: "nuclio"
     volumes:
-      - "${SHARED_DIR:?err}:/data"
+      - "${HOST_MNT_DIR:?err}:/data"
     networks:
       - mlrun
 
