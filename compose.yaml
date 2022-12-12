@@ -23,7 +23,7 @@ services:
                   path: ${SHARED_DIR:?err}
               volumeMount:
                 name: mlrun-stuff
-                mountPath: /home/jovyan/data/
+                mountPath: ${SHARED_DIR:?err}
         logger:
           sinks:
             myStdoutLoggerSink:

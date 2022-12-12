@@ -1,0 +1,146 @@
+kind: project
+metadata:
+  name: ny-taxi-demo-yaron
+  created: '2022-11-20T22:05:41.753000'
+spec:
+  functions:
+  - name: data-prep
+    kind: job
+    image: mlrun/ml-models
+    handler: src.data_prep.data_preparation
+    with_repo: true
+  - name: trainer
+    kind: job
+    image: mlrun/ml-models
+    handler: src.trainer.train
+    with_repo: true
+  - url: hub://auto_trainer
+    name: evaluate
+    kind: job
+    image: mlrun/ml-models
+    handler: evaluate
+  - name: serving
+    spec:
+      kind: serving
+      metadata:
+        name: serving
+        project: ny-taxi-demo-yaron
+        categories: []
+      spec:
+        command: ''
+        args: []
+        image: mlrun/ml-models
+        build:
+          source: ./
+          commands: []
+          code_origin: git://github.com/yaronha/nyc-taxi-demo.git#refs/heads/main#da500dd01f62304a3cf69f93b85b8be1bbfb01dd
+        description: ''
+        disable_auto_mount: false
+        env: []
+        resources:
+          requests:
+            memory: 1Mi
+            cpu: 25m
+          limits:
+            memory: 20Gi
+            cpu: '2'
+        priority_class_name: igz-workload-medium
+        preemption_mode: prevent
+        min_replicas: 1
+        max_replicas: 4
+        source: ''
+        function_kind: serving_v2
+        graph:
+          steps:
+            calculate_airport_distance:
+              kind: task
+              handler: src.data_prep.add_airport_dist
+              after: []
+            calculate_radian_conv:
+              kind: task
+              handler: src.data_prep.radian_conv_step
+              after:
+              - calculate_airport_distance
+            bearing_calculation:
+              kind: task
+              handler: src.data_prep.sphere_dist_bear_step
+              after:
+              - calculate_radian_conv
+            distance_calculation:
+              kind: task
+              handler: src.data_prep.sphere_dist_step
+              after:
+              - bearing_calculation
+            DateExtractor:
+              kind: task
+              class_name: mlrun.feature_store.steps.DateExtractor
+              class_args:
+                parts:
+                - hour
+                - day
+                - month
+                - day_of_week
+                - year
+                timestamp_col: pickup_datetime
+              after:
+              - distance_calculation
+            preprocess:
+              kind: task
+              handler: src.serving.preprocess
+              after:
+              - DateExtractor
+            predict_fare:
+              kind: task
+              class_name: mlrun.frameworks.lgbm.LGBMModelServer
+              class_args:
+                model_path: store://models/ny-taxi-demo-yaron/lgbm_ny_taxi#0:d166347a8b654dfb995eb37953b72482
+              after:
+              - preprocess
+            postprocess:
+              kind: task
+              handler: src.serving.postprocess
+              after:
+              - predict_fare
+              responder: true
+          engine: async
+        secret_sources: []
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: app.iguazio.com/lifecycle
+                  operator: NotIn
+                  values:
+                  - preemptible
+                - key: eks.amazonaws.com/capacityType
+                  operator: NotIn
+                  values:
+                  - SPOT
+                - key: node-lifecycle
+                  operator: NotIn
+                  values:
+                  - spot
+        tolerations: null
+        security_context: {}
+      verbose: false
+  - name: server_tester
+    kind: job
+    image: mlrun/ml-models
+    handler: src.serving_test.model_server_tester
+    with_repo: true
+  workflows:
+  - path: src/workflow-batch.py
+    name: lgbm_ny_taxi_pipeline_batch_predict
+  - path: src/workflow.py
+    name: lgbm_ny_taxi_pipeline
+  - path: src/train_workflow.py
+    name: train_workflow
+  artifacts: []
+  source: git://github.com/davesh0812/nyc-taxi-demo.git#refs/heads/main
+  origin_url: git://github.com/davesh0812/nyc-taxi-demo.git#refs/heads/main
+  load_source_on_run: true
+  desired_state: offline
+  owner: yaron
+status:
+  state: offline
