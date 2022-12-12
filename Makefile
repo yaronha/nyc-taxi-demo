@@ -6,7 +6,7 @@ MLRUN_TAG ?= 1.2.0
 HOST_IP ?=$$(ip route get 1.2.3.4 | awk '{print $$7}')
 CONDA_ENV ?= mlrun
 SHELL=/bin/bash
-CONDA_PY_VER ?= 3.8
+CONDA_PY_VER ?= 3.7
 CONDA_ACTIVATE = source $$(conda info --base)/etc/profile.d/conda.sh ; conda activate ; conda activate
 
 #################################################################################
