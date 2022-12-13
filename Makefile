@@ -2,7 +2,7 @@
 PYTHON_INTERPRETER = python3
 SHARED_DIR ?= ~/mlrun-data
 HOST_MNT_DIR ?= $(SHARED_DIR)
-MLRUN_TAG ?= 1.2.0
+MLRUN_TAG ?= 1.2.1-rc4
 HOST_IP ?=$$(ip route get 1.2.3.4 | awk '{print $$7}')
 CONDA_ENV ?= mlrun
 SHELL=/bin/bash
@@ -71,8 +71,7 @@ mlrun-docker: ## Start MLRun & Nuclio containers (using Docker compose)
 .PHONY: mlrun-api
 mlrun-api: ## Run MLRun DB locally (as process)
 	@echo "Installing MLRun API dependencies ..."
-	$(PYTHON_INTERPRETER) -m pip install mlrun[api]==$(MLRUN_TAG)
-	MLRUN_ENV_FILE= MLRUN_ARTIFACT_PATH=$$(realpath ./artifacts) mlrun db -b
+	MLRUN_IGNORE_ENV_FILE=1 mlrun db -b -a ./artifacts
 
 .PHONY: conda-env
 conda-env: ## Create a conda environment

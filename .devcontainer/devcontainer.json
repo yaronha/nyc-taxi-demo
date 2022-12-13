@@ -19,7 +19,7 @@
 		"MLRUN_ENV_FILE": "${containerWorkspaceFolder}/mlrun.env",
 		"SHARED_DIR": "/tmp/mlrun",
 		"HOST_MNT_DIR": "/mnt/containerTmp/mlrun",
-		"MLRUN_TAG": "1.2.0"
+		"MLRUN_TAG": "1.2.1-rc4"
 	},
 	// Configure tool-specific properties.
 	"customizations": {
