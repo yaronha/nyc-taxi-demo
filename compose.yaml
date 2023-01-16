@@ -10,7 +10,7 @@ services:
         runtime:
           common:
             env:
-              MLRUN_DBPATH: http://${HOST_IP:?err}:8080
+              MLRUN_DBPATH: http://mlrun-api:8080
         local:
           defaultFunctionContainerNetworkName: mlrun
           defaultFunctionRestartPolicy:
